@@ -15,7 +15,13 @@
         "symfony/yaml": "7.2.*"
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.61"
+        "doctrine/dbal": "^3",
+        "doctrine/doctrine-bundle": "^2.13",
+        "doctrine/doctrine-migrations-bundle": "^3.3",
+        "doctrine/orm": "^3.3",
+        "symfony/http-foundation": "7.2.*",
+        "symfony/maker-bundle": "^1.61",
+        "symfony/validator": "7.2.*"
     },
     "config": {
         "allow-plugins": {
@@ -64,7 +70,8 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.2.*"
+            "require": "7.2.*",
+            "docker": false
         }
     }
 }
