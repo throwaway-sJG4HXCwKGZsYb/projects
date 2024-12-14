@@ -16,6 +16,7 @@ class Project
     #[ORM\Column]
     private ?int $id = null;
 
+    // TODO unique index, unique validation
     #[ORM\Column(type: 'guid')]
     #[Assert\NotBlank]
     private ?string $guid = null;
