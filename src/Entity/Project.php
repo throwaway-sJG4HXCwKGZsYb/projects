@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\Enums\ProjectStatusesEnum;
 use App\Repository\ProjectRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project
@@ -14,19 +16,29 @@ class Project
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: "guid")]
+    #[ORM\Column(type: 'guid')]
+    #[Assert\NotBlank]
     private ?string $guid = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
+    #[Assert\NotBlank]
+    #[
+        Assert\Choice([
+            ProjectStatusesEnum::ACTIVE->value,
+            ProjectStatusesEnum::INACTIVE->value,
+        ])
+    ]
     private ?int $status = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
     private ?float $duration = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -43,7 +55,7 @@ class Project
         return $this->id;
     }
 
-    public function setId(string $id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -55,7 +67,7 @@ class Project
         return $this->guid;
     }
 
-    public function setGuid(string $guid): static
+    public function setGuid(?string $guid): static
     {
         $this->guid = $guid;
 
@@ -67,7 +79,7 @@ class Project
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
 
@@ -91,7 +103,7 @@ class Project
         return $this->status;
     }
 
-    public function setStatus(int $status): static
+    public function setStatus(?int $status): static
     {
         $this->status = $status;
 
@@ -103,7 +115,7 @@ class Project
         return $this->duration;
     }
 
-    public function setDuration(float $duration): static
+    public function setDuration(?float $duration): static
     {
         $this->duration = $duration;
 
