@@ -14,6 +14,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+
+#[Route('/api')]
 class TaskController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
