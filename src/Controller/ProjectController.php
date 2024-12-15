@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProjectController extends AbstractController
@@ -115,7 +116,8 @@ class ProjectController extends AbstractController
         int $id,
         Request $request,
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        SerializerInterface $serializer
     ): JsonResponse {
         $project = $entityManager->getRepository(Project::class)->find($id);
 
