@@ -111,7 +111,7 @@ class ProjectController extends AbstractController
         );
     }
 
-    #[Route('/projects/{id}', name: 'update_project', methods: ['PATCH'])]
+    #[Route('/api/projects/{id}', name: 'update_project', methods: ['PATCH'])]
     public function update(
         int $id,
         Request $request,
