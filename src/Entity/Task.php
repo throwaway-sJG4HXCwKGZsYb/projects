@@ -13,11 +13,11 @@ class Task
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(groups: ['task:read'])]
+    #[Groups(groups: ['task:read', 'project:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(groups: ['task:read'])]
+    #[Groups(groups: ['task:read', 'project:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
@@ -25,7 +25,7 @@ class Task
     private ?Project $project = null;
 
     #[ORM\Column(type: Types::GUID)]
-    #[Groups(groups: ['task:read'])]
+    #[Groups(groups: ['task:read', 'project:read'])]
     private ?string $guid = null;
 
     #[ORM\Column(nullable: true)]

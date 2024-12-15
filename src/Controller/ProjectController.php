@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api')]
@@ -28,7 +27,7 @@ class ProjectController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         try {
-            (new StoreProjectAction(
+            $project = (new StoreProjectAction(
                 $entityManager,
                 $validator,
                 $data
@@ -45,9 +44,12 @@ class ProjectController extends AbstractController
             );
         }
 
-        return new JsonResponse(
-            ['code' => 200, 'message' => 'Project created successfully'],
-            200
+        return $this->json(
+            $project,
+            201,
+            context: [
+                'groups' => ['project:read'],
+            ]
         );
     }
 
@@ -89,36 +91,21 @@ class ProjectController extends AbstractController
             ->getRepository(Project::class)
             ->findActiveProjects();
 
-        $projectData = array_map(function (Project $project) {
-            return [
-                'id' => $project->getId(),
-                'guid' => $project->getGuid(),
-                'title' => $project->getTitle(),
-                'description' => $project->getDescription(),
-                'status' => $project->getStatus(),
-                'duration' => $project->getDuration(),
-                'client' => $project->getClient(),
-                'company' => $project->getCompany(),
-                'deleted_at' => $project->getDeletedAt(),
-            ];
-        }, $projects);
-
-        return new JsonResponse(
-            [
-                'code' => 200,
-                'data' => $projectData,
-            ],
-            200
+        return $this->json(
+            $projects,
+            200,
+            context: [
+                'groups' => 'project:read',
+            ]
         );
     }
 
-    #[Route('/api/projects/{id}', name: 'update_project', methods: ['PATCH'])]
+    #[Route('/projects/{id}', name: 'update_project', methods: ['PATCH'])]
     public function update(
         int $id,
         Request $request,
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
-        SerializerInterface $serializer
+        ValidatorInterface $validator
     ): JsonResponse {
         $project = $entityManager->getRepository(Project::class)->find($id);
 
@@ -150,25 +137,15 @@ class ProjectController extends AbstractController
             return new JsonResponse(
                 ['code' => 400, 'message' => 'Something went wrong'],
                 200
-            ); // TODO: global exception handling
+            );
         }
 
-        return new JsonResponse(
-            [
-                'code' => 200,
-                'message' => 'Project updated successfully',
-                'data' => [
-                    'id' => $project->getId(),
-                    'title' => $project->getTitle(),
-                    'description' => $project->getDescription(),
-                    'status' => $project->getStatus(),
-                    'duration' => $project->getDuration(),
-                    'client' => $project->getClient(),
-                    'company' => $project->getCompany(),
-                    'deleted_at' => $project->getDeletedAt(),
-                ],
-            ],
-            200
+        return $this->json(
+            $project,
+            201,
+            context: [
+                'groups' => ['project:read'],
+            ]
         );
     }
 }

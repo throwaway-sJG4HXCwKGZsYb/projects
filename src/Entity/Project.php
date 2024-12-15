@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
@@ -16,18 +17,22 @@ class Project
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: ['project:read', 'task:read'])]
     private ?int $id = null;
 
     // TODO unique index, unique validation
     #[ORM\Column(type: 'guid')]
     #[Assert\NotBlank]
+    #[Groups(groups: ['project:read', 'task:read'])]
     private ?string $guid = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(groups: ['project:read', 'task:read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(groups: ['project:read', 'task:read'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
@@ -38,25 +43,37 @@ class Project
             ProjectStatusesEnum::INACTIVE->value,
         ])
     ]
+    #[Groups(groups: ['project:read', 'task:read'])]
     private ?int $status = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
+    #[Groups(groups: ['project:read', 'task:read'])]
     private ?float $duration = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['project:read', 'task:read'])]
     private ?string $client = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['project:read', 'task:read'])]
     private ?string $company = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(groups: ['project:read', 'task:read'])]
     private ?\DateTimeImmutable $deleted_at = null;
 
     /**
      * @var Collection<int, Task>
      */
-    #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'project', orphanRemoval: true)]
+    #[
+        ORM\OneToMany(
+            targetEntity: Task::class,
+            mappedBy: 'project',
+            orphanRemoval: true
+        )
+    ]
+    #[Groups(groups: ['task:read'])]
     private Collection $tasks;
 
     public function __construct()

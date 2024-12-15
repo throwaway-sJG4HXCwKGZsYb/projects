@@ -10,10 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
 
 #[Route('/api')]
 class TaskController extends AbstractController
@@ -29,33 +27,23 @@ class TaskController extends AbstractController
     public function list(int $id): JsonResponse
     {
         $tasks = $this->entityManager
-            ->getRepository(Task::class)
-            ->findBy(['deleted_at' => null, 'project_id' => $id]);
+            ->getRepository(Project::class)
+            ->find($id)
+            ->getTasks();
 
-        return $this->json($tasks, 200);
+        return $this->json($tasks, 200, [], ['groups' => ['task:read']]);
     }
 
     #[Route('/tasks/{id}', name: 'show_task', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
-        $task =
-            $this->entityManager->getRepository(Task::class)->findBy([
-                'deleted_at' => null,
-                'id' => $id,
-            ])[0] ?? null;
+        $task = $this->entityManager->getRepository(Task::class)->find($id);
 
         if (!$task) {
             return new JsonResponse(['message' => 'Task not found'], 404);
         }
 
-        return $this->json(
-            [
-                'id' => $task->getId(),
-                'name' => $task->getName(),
-                'project_id' => $task->getProject()->getId(),
-            ],
-            200
-        );
+        return $this->json($task, 200, [], ['groups' => ['task:read']]);
     }
 
     #[Route('/projects/{id}/tasks', name: 'create_task', methods: ['POST'])]
@@ -105,25 +93,22 @@ class TaskController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json(
+            $task,
+            201,
+            [],
             [
-                'message' => 'Task created successfully',
-            ],
-            201
+                'groups' => ['task:read'],
+            ]
         );
     }
 
-    #[Route('/tasks/{id}', name: 'update', methods: ['PATCH'])]
+    #[Route('/tasks/{id}', name: 'update_task', methods: ['PATCH'])]
     public function update(
         int $id,
         Request $request,
-        ValidatorInterface $validator,
-        SerializerInterface $serializer
+        ValidatorInterface $validator
     ): JsonResponse {
-        $task =
-            $this->entityManager->getRepository(Task::class)->findBy([
-                'id' => $id,
-                'deleted_at' => null,
-            ])[0] ?? null;
+        $task = $this->entityManager->getRepository(Task::class)->find($id);
 
         if (!$task) {
             return new JsonResponse(['message' => 'Task not found'], 404);
@@ -154,7 +139,7 @@ class TaskController extends AbstractController
         return $this->json($task, 200, [], ['groups' => ['task:read']]);
     }
 
-    #[Route('/tasks/{id}', name: 'update', methods: ['DELETE'])]
+    #[Route('/tasks/{id}', name: 'delete_task', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
         $task = $this->entityManager->getRepository(Task::class)->find($id);

@@ -19,7 +19,6 @@ class ProjectRepository extends ServiceEntityRepository
     public function findActiveProjects(): array
     {
         return $this->createQueryBuilder('p')
-            ->where('p.deleted_at IS NULL')
             ->getQuery()
             ->getResult();
     }

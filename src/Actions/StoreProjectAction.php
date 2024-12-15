@@ -19,7 +19,7 @@ class StoreProjectAction
     /**
      * @throws ValidationException
      */
-    public function execute(): void
+    public function execute(): Project
     {
         $project = new Project();
         $project->setTitle($this->data['title'] ?? null);
@@ -34,6 +34,8 @@ class StoreProjectAction
 
         $this->entityManager->persist($project);
         $this->entityManager->flush();
+
+        return $project;
     }
 
     /**
