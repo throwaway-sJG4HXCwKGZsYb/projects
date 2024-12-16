@@ -4,6 +4,7 @@ namespace App\EventListener;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ExceptionListener
 {
@@ -15,12 +16,16 @@ class ExceptionListener
         $response = new JsonResponse(
             [
                 'message' => $exception->getMessage(),
-                'code' => 500,
+                'code' =>
+                    $exception instanceof HttpExceptionInterface
+                        ? $exception->getStatusCode()
+                        : 500,
             ],
             200
         );
 
-        // Set the response on the event
+        $event->allowCustomResponseCode();
+
         $event->setResponse($response);
     }
 }
